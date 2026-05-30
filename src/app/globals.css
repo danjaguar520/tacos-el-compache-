@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Tacos El Compache de Ah Mun — Sistema de marca
+   Paleta cálida mexicana (del Brand ID)
+   ============================================================ */
+@theme {
+  /* Colores de marca */
+  --color-chile: #8b2e1d; /* Chile Ancho */
+  --color-chile-700: #6f2417;
+  --color-barro: #b35c2e; /* Barro Artesanal */
+  --color-maiz: #f4e3b2; /* Maíz Nixtamal */
+  --color-frijol: #1b1a19; /* Frijol Negro */
+  --color-crema: #f7f2ea; /* Crema Mexicana */
+  --color-epazote: #5a7a45; /* Verde Epazote */
+  --color-naranja: #e8902a; /* Acento del logo */
+
+  /* Tipografía */
+  --font-display: var(--font-cormorant), Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Sombras suaves */
+  --shadow-suave: 0 4px 20px -6px rgb(27 26 25 / 0.18);
+  --shadow-tarjeta: 0 2px 12px -4px rgb(27 26 25 / 0.14);
+}
+
+:root {
+  --background: var(--color-crema);
+  --foreground: var(--color-frijol);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  /* deja espacio para la barra inferior fija en móvil */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Títulos con la serif de marca */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Patrón decorativo sutil (papel picado / textura cálida) */
+.bg-textura {
+  background-color: var(--color-crema);
+  background-image: radial-gradient(
+      circle at 1px 1px,
+      rgb(139 46 29 / 0.06) 1px,
+      transparent 0
+    );
+  background-size: 22px 22px;
+}
+
+/* Ocultar scrollbar en carruseles de categorías */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
