@@ -2,26 +2,34 @@
 
 /* ============================================================
    Tacos El Compache de Ah Mun — Sistema de marca
-   Paleta cálida mexicana (del Brand ID)
    ============================================================ */
 @theme {
   /* Colores de marca */
-  --color-chile: #8b2e1d; /* Chile Ancho */
+  --color-chile: #8b2e1d;
   --color-chile-700: #6f2417;
-  --color-barro: #b35c2e; /* Barro Artesanal */
-  --color-maiz: #f4e3b2; /* Maíz Nixtamal */
-  --color-frijol: #1b1a19; /* Frijol Negro */
-  --color-crema: #f7f2ea; /* Crema Mexicana */
-  --color-epazote: #5a7a45; /* Verde Epazote */
-  --color-naranja: #e8902a; /* Acento del logo */
+  --color-barro: #b35c2e;
+  --color-maiz: #f4e3b2;
+  --color-frijol: #1b1a19;
+  --color-crema: #f7f2ea;
+  --color-epazote: #5a7a45;
+  --color-naranja: #e8902a;
 
-  /* Tipografía */
-  --font-display: var(--font-cormorant), Georgia, serif;
+  /* Tipografía — Fraunces premium para headings, Cormorant para accents */
+  --font-display: var(--font-fraunces), var(--font-cormorant), Georgia, serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  /* Sombras suaves */
+  /* Sombras tarjetas */
   --shadow-suave: 0 4px 20px -6px rgb(27 26 25 / 0.18);
-  --shadow-tarjeta: 0 2px 12px -4px rgb(27 26 25 / 0.14);
+  --shadow-tarjeta: 0 2px 12px -4px rgb(27 26 25 / 0.12), 0 1px 0 0 rgb(139 46 29 / 0.07);
+  --shadow-tarjeta-hover: 0 8px 28px -6px rgb(27 26 25 / 0.22), 0 2px 0 0 rgb(139 46 29 / 0.1);
+
+  /* Sombras botones 3D táctiles */
+  --shadow-btn-chile: 0 4px 0 0 #6f2417, 0 6px 18px -4px rgb(139 46 29 / 0.38);
+  --shadow-btn-chile-hover: 0 6px 0 0 #6f2417, 0 10px 24px -4px rgb(139 46 29 / 0.44);
+  --shadow-btn-chile-active: 0 1px 0 0 #6f2417, 0 2px 6px -1px rgb(139 46 29 / 0.2);
+  --shadow-btn-maiz: 0 4px 0 0 rgb(179 135 40 / 0.65), 0 4px 12px -2px rgb(179 92 46 / 0.15);
+  --shadow-btn-maiz-hover: 0 6px 0 0 rgb(179 135 40 / 0.75), 0 8px 18px -2px rgb(179 92 46 / 0.2);
+  --shadow-btn-maiz-active: 0 1px 0 0 rgb(179 135 40 / 0.55);
 }
 
 :root {
@@ -38,31 +46,38 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  /* deja espacio para la barra inferior fija en móvil */
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Títulos con la serif de marca */
 .font-display {
   font-family: var(--font-display);
 }
 
-/* Patrón decorativo sutil (papel picado / textura cálida) */
+/* ============================================================
+   Texturas artesanales
+   ============================================================ */
+
+/* Fondo principal — papel kraft: grano + puntos + luz ambiental */
 .bg-textura {
   background-color: var(--color-crema);
-  background-image: radial-gradient(
-      circle at 1px 1px,
-      rgb(139 46 29 / 0.06) 1px,
-      transparent 0
-    );
-  background-size: 22px 22px;
+  background-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='250' height='250' filter='url(%23n)' opacity='0.038'/></svg>"),
+    radial-gradient(circle at 1px 1px, rgb(139 46 29 / 0.065) 1px, transparent 0),
+    radial-gradient(ellipse 80% 55% at 0% 0%, rgb(232 144 42 / 0.045) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 50% at 100% 100%, rgb(179 92 46 / 0.04) 0%, transparent 60%);
+  background-size: 250px 250px, 22px 22px, 100% 100%, 100% 100%;
 }
 
-/* Ocultar scrollbar en carruseles de categorías */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+/* Footer oscuro — comal/barro: grano + calor sutil */
+.bg-textura-oscura {
+  background-color: var(--color-frijol);
+  background-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.06'/></svg>"),
+    radial-gradient(ellipse 60% 55% at 15% 85%, rgb(139 46 29 / 0.22) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 90% 10%, rgb(232 144 42 / 0.06) 0%, transparent 60%);
+  background-size: 200px 200px, 100% 100%, 100% 100%;
 }
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+
+/* Ocultar scrollbar en carruseles */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

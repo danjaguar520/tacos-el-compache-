@@ -4,7 +4,7 @@ import { business } from "@/config/business";
 /** Pie de página cálido con franja de marca. */
 export function Footer() {
   return (
-    <footer className="mt-16 bg-frijol text-crema/90">
+    <footer className="mt-16 bg-textura-oscura text-crema/90">
       <div className="bg-chile py-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-crema">
         Tacos de guisos · Hechos con amor · Todos los días
       </div>

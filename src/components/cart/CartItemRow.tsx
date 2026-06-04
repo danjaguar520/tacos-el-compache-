@@ -13,7 +13,7 @@ export function CartItemRow({ item }: { item: CartItem }) {
   const remove = useCart((s) => s.remove);
 
   return (
-    <div className="flex gap-3 rounded-2xl bg-white p-3 shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/10">
+    <div className="flex gap-3 rounded-2xl bg-crema p-3 shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/15">
       <ProductImage
         src={item.image_url}
         alt={item.name}

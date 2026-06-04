@@ -19,8 +19,10 @@ export function AddToCartButton({ product }: { product: Product }) {
     <button
       onClick={handleAdd}
       aria-label={`Agregar ${product.name} al carrito`}
-      className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold transition active:scale-95 ${
-        added ? "bg-epazote text-crema" : "bg-chile text-crema hover:bg-chile-700"
+      className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold transition-[transform,box-shadow,background-color] duration-150 hover:-translate-y-px active:translate-y-px ${
+        added
+          ? "bg-epazote text-crema shadow-[0_3px_0_0_#3d5c2e] active:shadow-none"
+          : "bg-chile text-crema shadow-[var(--shadow-btn-chile)] hover:bg-chile-700 hover:shadow-[var(--shadow-btn-chile-hover)] active:shadow-[var(--shadow-btn-chile-active)]"
       }`}
     >
       {added ? (

@@ -1,7 +1,7 @@
+import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
 import { ProductCard } from "@/components/menu/ProductCard";
 import { fetchMenu } from "@/lib/menu";
-import { business } from "@/config/business";
 
 const valores = [
   { emoji: "🍲", titulo: "+10 guisos", sub: "distintos cada día" },
@@ -19,27 +19,26 @@ export default async function Home() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-frijol text-crema">
-        <div className="absolute inset-0 bg-gradient-to-br from-chile/40 via-frijol to-frijol" />
-        <div className="relative mx-auto max-w-3xl px-4 py-14 sm:py-20">
-          <p className="font-display text-sm font-semibold uppercase tracking-[0.25em] text-naranja">
-            Tacos de guisos · Mérida
-          </p>
-          <h1 className="mt-3 font-display text-5xl font-bold leading-[0.95] sm:text-6xl">
-            El sabor de casa,
-            <br />
-            <span className="italic text-maiz">más cerca.</span>
-          </h1>
-          <p className="mt-4 max-w-md text-crema/80">{business.descripcion}</p>
-
-          <div className="mt-7 flex flex-wrap gap-3">
-            <ButtonLink href="/menu" size="lg">
-              Ver menú
-            </ButtonLink>
-            <ButtonLink href="/ubicacion" variant="secondary" size="lg">
-              ¿Cómo llegar?
-            </ButtonLink>
+      <section className="bg-frijol">
+        <div className="relative w-full">
+          <Image
+            src="/images/tc-banner.png"
+            alt="Tacos El Compache de Ah Mun — +10 deliciosos guisos cada día"
+            width={1500}
+            height={600}
+            priority
+            className="h-[56vw] max-h-[520px] min-h-[220px] w-full object-cover object-center sm:object-contain sm:max-h-[480px]"
+          />
+          {/* Desktop: overlay sobre el banner */}
+          <div className="absolute inset-x-0 bottom-6 hidden justify-center gap-3 drop-shadow-lg sm:flex">
+            <ButtonLink href="/menu" size="lg">Ver menú</ButtonLink>
+            <ButtonLink href="/ubicacion" variant="secondary" size="lg">¿Cómo llegar?</ButtonLink>
           </div>
+        </div>
+        {/* Mobile: debajo del banner */}
+        <div className="flex flex-wrap justify-center gap-3 px-4 py-5 sm:hidden">
+          <ButtonLink href="/menu" size="lg">Ver menú</ButtonLink>
+          <ButtonLink href="/ubicacion" variant="secondary" size="lg">¿Cómo llegar?</ButtonLink>
         </div>
       </section>
 
@@ -49,7 +48,7 @@ export default async function Home() {
           {valores.map((v) => (
             <div
               key={v.titulo}
-              className="rounded-2xl bg-white p-4 text-center shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/10"
+              className="rounded-2xl bg-crema p-4 text-center shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/15 transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-tarjeta-hover)]"
             >
               <div className="text-2xl">{v.emoji}</div>
               <p className="mt-1.5 font-display text-base font-bold text-chile">{v.titulo}</p>

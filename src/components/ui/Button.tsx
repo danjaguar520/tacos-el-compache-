@@ -4,7 +4,7 @@ import type { ComponentProps, ReactNode } from "react";
 type Variant = "primary" | "secondary" | "ghost" | "whatsapp";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chile";
+  "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-[transform,box-shadow,background-color] duration-150 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chile";
 
 const sizes = {
   md: "px-5 py-2.5 text-sm",
@@ -12,10 +12,13 @@ const sizes = {
 } as const;
 
 const variants: Record<Variant, string> = {
-  primary: "bg-chile text-crema shadow-[var(--shadow-suave)] hover:bg-chile-700",
-  secondary: "bg-maiz text-frijol hover:brightness-95",
-  ghost: "bg-transparent text-chile hover:bg-chile/10",
-  whatsapp: "bg-epazote text-crema hover:brightness-95",
+  primary:
+    "bg-chile text-crema shadow-[var(--shadow-btn-chile)] hover:bg-chile-700 hover:-translate-y-px hover:shadow-[var(--shadow-btn-chile-hover)] active:translate-y-px active:shadow-[var(--shadow-btn-chile-active)]",
+  secondary:
+    "bg-maiz text-frijol shadow-[var(--shadow-btn-maiz)] hover:brightness-95 hover:-translate-y-px hover:shadow-[var(--shadow-btn-maiz-hover)] active:translate-y-px active:shadow-[var(--shadow-btn-maiz-active)]",
+  ghost: "bg-transparent text-chile hover:bg-chile/10 hover:-translate-y-px active:translate-y-px",
+  whatsapp:
+    "bg-epazote text-crema shadow-[0_4px_0_0_#3d5c2e,0_6px_16px_-4px_rgb(90_122_69_/_0.35)] hover:brightness-95 hover:-translate-y-px active:translate-y-px active:shadow-none",
 };
 
 function classes(variant: Variant, size: keyof typeof sizes, extra?: string) {

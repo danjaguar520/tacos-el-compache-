@@ -8,7 +8,7 @@ export function ProductCard({ product }: { product: Product }) {
   const emoji = product.category_slug === "aguas-y-refrescos" ? "🥤" : "🌮";
 
   return (
-    <article className="flex overflow-hidden rounded-2xl bg-white shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/10">
+    <article className="flex overflow-hidden rounded-2xl bg-crema shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/15 transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-tarjeta-hover)]">
       <ProductImage
         src={product.image_url}
         alt={product.name}

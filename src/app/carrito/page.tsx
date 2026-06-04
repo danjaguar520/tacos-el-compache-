@@ -38,7 +38,7 @@ export default function CarritoPage() {
             Vaciar carrito
           </button>
 
-          <div className="mt-6 rounded-2xl bg-white p-5 shadow-[var(--shadow-suave)] ring-1 ring-barro/10">
+          <div className="mt-6 rounded-2xl bg-crema p-5 shadow-[var(--shadow-suave)] ring-1 ring-barro/15">
             <CartSummary subtotalCents={subtotal} />
             <ButtonLink href="/checkout" size="lg" className="mt-5 w-full">
               Ir a pagar
@@ -55,7 +55,7 @@ export default function CarritoPage() {
 
 function EmptyCart() {
   return (
-    <div className="mt-10 rounded-3xl bg-white p-10 text-center shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/10">
+    <div className="mt-10 rounded-3xl bg-crema p-10 text-center shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/15">
       <div className="text-5xl">🛒</div>
       <p className="mt-4 font-display text-2xl font-bold text-frijol">
         Tu carrito está vacío

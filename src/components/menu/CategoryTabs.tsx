@@ -17,7 +17,7 @@ export function CategoryTabs({ categories }: { categories: Category[] }) {
         <button
           key={c.id}
           onClick={() => scrollTo(c.slug)}
-          className="whitespace-nowrap rounded-full bg-white px-4 py-2 text-sm font-semibold text-frijol shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/10 transition hover:bg-maiz"
+          className="whitespace-nowrap rounded-full bg-crema px-4 py-2 text-sm font-semibold text-frijol shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/15 transition-[transform,box-shadow,background-color] duration-150 hover:bg-maiz hover:-translate-y-px hover:shadow-[var(--shadow-tarjeta-hover)] active:translate-y-px"
         >
           {c.name}
         </button>
