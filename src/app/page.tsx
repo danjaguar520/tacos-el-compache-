@@ -27,7 +27,7 @@ export default async function Home() {
             width={2048}
             height={768}
             priority
-            className="h-[56vw] max-h-[520px] min-h-[220px] w-full object-cover object-center"
+            className="h-[300px] w-full object-cover object-center sm:h-[360px] lg:h-[420px]"
           />
           {/* Desktop: overlay sobre el banner */}
           <div className="absolute inset-x-0 bottom-6 hidden justify-center gap-3 drop-shadow-lg sm:flex">
