@@ -22,12 +22,12 @@ export default async function Home() {
       <section className="bg-frijol">
         <div className="relative w-full">
           <Image
-            src="/images/tc-banner.png"
-            alt="Tacos El Compache de Ah Mun — +10 deliciosos guisos cada día"
-            width={1500}
-            height={600}
+            src="/images/banner-hero.png"
+            alt="Tacos El Compache de Ah Mun — Los mejores tacos de guisos en Playa del Carmen"
+            width={2048}
+            height={768}
             priority
-            className="h-[56vw] max-h-[520px] min-h-[220px] w-full object-cover object-center sm:object-contain sm:max-h-[480px]"
+            className="h-[56vw] max-h-[520px] min-h-[220px] w-full object-cover object-center"
           />
           {/* Desktop: overlay sobre el banner */}
           <div className="absolute inset-x-0 bottom-6 hidden justify-center gap-3 drop-shadow-lg sm:flex">
