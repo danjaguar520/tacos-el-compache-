@@ -17,7 +17,7 @@ export default async function Home() {
         <div className="relative w-full">
           <Image
             src="/images/banner-hero.png"
-            alt="Tacos El Compache de Ah Mun — Los mejores tacos de guisos en Playa del Carmen"
+            alt={`${business.nombre} — ${business.descripcion}`}
             width={2048}
             height={768}
             priority

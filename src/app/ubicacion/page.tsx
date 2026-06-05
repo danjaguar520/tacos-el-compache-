@@ -19,7 +19,7 @@ export default function UbicacionPage() {
       <header className="text-center">
         <h1 className="font-display text-4xl font-bold text-chile">Visítanos</h1>
         <p className="mt-2 text-sm text-frijol/65">
-          Te esperamos con la cazuela lista.
+          {business.ui.ubicacionSub}
         </p>
       </header>
 

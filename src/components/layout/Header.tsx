@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 import { CartBadge } from "@/components/layout/CartBadge";
+import { business } from "@/config/business";
 
 /** Encabezado superior. Logo + acceso rápido al carrito. */
 export function Header() {
@@ -14,13 +15,13 @@ export function Header() {
             href="/menu"
             className="hidden rounded-full px-3 py-2 text-sm font-semibold text-frijol/80 hover:text-chile sm:inline-block"
           >
-            Menú
+            {business.nav.catalogoLabel}
           </Link>
           <Link
             href="/nosotros"
             className="hidden rounded-full px-3 py-2 text-sm font-semibold text-frijol/80 hover:text-chile sm:inline-block"
           >
-            Nosotros
+            {business.nav.nosotrosLabel}
           </Link>
           <Link
             href="/carrito"

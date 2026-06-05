@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/cart-store";
 import { useHydrated } from "@/lib/use-hydrated";
+import { business } from "@/config/business";
 
 /** Barra de navegación inferior fija (mobile-first). */
 export function BottomNav() {
@@ -16,7 +17,7 @@ export function BottomNav() {
 
   const items = [
     { href: "/", label: "Inicio", icon: HomeIcon },
-    { href: "/menu", label: "Menú", icon: MenuIcon },
+    { href: "/menu", label: business.nav.catalogoLabel, icon: MenuIcon },
     { href: "/carrito", label: "Carrito", icon: CartIcon, badge: mounted ? count : 0 },
     { href: "/ubicacion", label: "Ubicación", icon: PinIcon },
   ];

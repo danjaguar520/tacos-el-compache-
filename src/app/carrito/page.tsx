@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { business } from "@/config/business";
 import { useCart } from "@/lib/cart-store";
 import { useHydrated } from "@/lib/use-hydrated";
 import { CartItemRow } from "@/components/cart/CartItemRow";
@@ -61,7 +62,7 @@ function EmptyCart() {
         Tu carrito está vacío
       </p>
       <p className="mt-1 text-sm text-frijol/60">
-        Antójate de unos buenos tacos de guiso.
+        {business.ui.carritoVacio}
       </p>
       <Link
         href="/menu"

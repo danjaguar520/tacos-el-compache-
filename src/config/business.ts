@@ -69,6 +69,60 @@ export const business = {
 
   // --- Slug único del negocio (deriva claves de sesión) ---
   slug: "compache",
+
+  // --- Navegación (etiquetas visibles en header, footer y bottom nav) ---
+  nav: {
+    catalogoLabel: "Menú",
+    nosotrosLabel: "¿Quiénes Somos?",
+  },
+
+  // --- Footer ---
+  footerSlogan: "Tacos de guisos · Hechos con amor · Todos los días",
+
+  // --- Textos UI menores ---
+  ui: {
+    carritoVacio: "Antójate de unos buenos tacos de guiso.",
+    ubicacionSub: "Te esperamos con la cazuela lista.",
+  },
+
+  // --- Página Nosotros ---
+  nosotros: {
+    metaDescription:
+      "La historia de Tacos El Compache de Ah Mun: tradición familiar, guisos a fuego lento y el sabor de casa.",
+    seccionLabel: "Nuestra historia",
+    heroTitulo:   "Cocinamos con amor, como en casa",
+    // El primer párrafo se antepone con business.nombre en el componente.
+    relato: [
+      "nació de una idea sencilla: que cualquiera pudiera sentarse a comer unos tacos de guiso como los que se preparan en una cocina mexicana de verdad. Sin atajos, sin polvos, sin prisa.",
+      "Todo se cocina a fuego lento en cazuelas de barro. Es la forma en que lo hacían nuestras abuelas y es la única manera de lograr ese sabor profundo, hogareño, que reconforta. Por eso cada día preparamos +10 guisos distintos, frescos y hechos al momento.",
+    ],
+    procesoTitulo: "Así preparamos tus tacos",
+    proceso: [
+      {
+        emoji: "🌅",
+        titulo: "Antes del amanecer",
+        texto: "Encendemos la lumbre y empezamos a guisar. Cada cazuela lleva su tiempo, sin prisas.",
+      },
+      {
+        emoji: "🍲",
+        titulo: "Más de 10 guisos",
+        texto: "Birria, mole, tinga, chicharrón en salsa verde, rajas… recetas que pasaron de generación en generación.",
+      },
+      {
+        emoji: "🫓",
+        titulo: "Al momento",
+        texto: "Calentamos la tortilla y servimos el taco recién hecho, como debe ser, con su salsa y limón.",
+      },
+    ],
+    valoresTitulo: "Lo que nos mueve",
+    valores: [
+      ["Tradición",    "Recetas de familia que respetamos al pie de la letra."],
+      ["Frescura",     "Guisado del día, nunca de ayer."],
+      ["Cercanía",     "Un trato cálido, como recibir visita en casa."],
+      ["Autenticidad", "Sabor mexicano honesto, sin pretensiones."],
+    ],
+    ctaTitulo: "¿Listo para probarlos?",
+  },
 } as const;
 
 /** Dirección en una sola línea, lista para mostrar o para Google Maps. */
