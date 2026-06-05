@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { fetchMenu } from "@/lib/menu";
 import { CategoryTabs } from "@/components/menu/CategoryTabs";
 import { ProductCard } from "@/components/menu/ProductCard";
+import { business } from "@/config/business";
 
 export const metadata: Metadata = {
   title: "Menú",
-  description: "Tacos de guisos preparados a diario y aguas frescas naturales.",
+  description: business.menuSubtitulo,
 };
 
 export default async function MenuPage() {
@@ -15,11 +16,11 @@ export default async function MenuPage() {
     <div className="mx-auto max-w-3xl px-4 pt-6">
       <header className="text-center">
         <p className="font-display text-sm font-semibold uppercase tracking-[0.2em] text-barro">
-          Hoy +10 guisos distintos
+          {business.menuEtiqueta}
         </p>
         <h1 className="font-display text-4xl font-bold text-chile">Nuestro Menú</h1>
         <p className="mx-auto mt-2 max-w-md text-sm text-frijol/65">
-          Hechos a fuego lento en cazuela de barro. Elige tus favoritos y agrégalos al carrito.
+          {business.menuSubtitulo}
         </p>
       </header>
 

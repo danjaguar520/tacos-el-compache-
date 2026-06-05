@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CartItem, Product } from "@/types";
 import { sumCents } from "@/lib/format";
+import { business } from "@/config/business";
 
 interface CartState {
   items: CartItem[];
@@ -74,7 +75,7 @@ export const useCart = create<CartState>()(
       subtotalCents: () => sumCents(get().items),
     }),
     {
-      name: "compache-cart",
+      name: `${business.slug}-cart`,
     },
   ),
 );

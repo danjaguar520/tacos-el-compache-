@@ -34,6 +34,41 @@ export const business = {
   // --- Entrega ---
   costoEnvioCents: 5000, // $50 MXN
   zonaCobertura: "Todo Playa del Carmen",
+
+  // --- Identidad visual del logo ---
+  logoLinea1: "Tacos",
+  logoLinea2: "El Compache de Ah Mun",
+  emoji: "🌮",
+
+  // --- Catálogo / Menú ---
+  categoriaDestacada: "tacos-de-guisos",
+  menuEtiqueta: "Hoy +10 guisos distintos",
+  menuSubtitulo:
+    "Hechos a fuego lento en cazuela de barro. Elige tus favoritos y agrégalos al carrito.",
+
+  // --- Propuesta de valor (home) ---
+  valores: [
+    { emoji: "🍲", titulo: "+10 guisos",  sub: "distintos cada día"  },
+    { emoji: "🔥", titulo: "Fuego lento", sub: "en cazuela de barro" },
+    { emoji: "❤️", titulo: "Recetas",     sub: "de familia"          },
+    { emoji: "🌮", titulo: "Al momento",  sub: "tacos recién hechos" },
+  ],
+
+  // --- CTA inferior home ---
+  ctaHome: {
+    titulo: "Tradición en cada taco",
+    texto:  "Cocinamos como en casa, con recetas de familia y los guisos que reconforten el alma.",
+    boton:  "Conoce nuestra historia",
+  },
+
+  // --- Textos del pedido ---
+  itemNombre: "tacos",
+
+  // --- Integración Mercado Pago ---
+  mpDescriptor: "EL COMPACHE", // máx 13 chars — aparece en extracto bancario del cliente
+
+  // --- Slug único del negocio (deriva claves de sesión) ---
+  slug: "compache",
 } as const;
 
 /** Dirección en una sola línea, lista para mostrar o para Google Maps. */

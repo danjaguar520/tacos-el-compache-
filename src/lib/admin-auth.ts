@@ -1,6 +1,7 @@
 import "server-only";
 import { createHmac } from "crypto";
 import { cookies } from "next/headers";
+import { business } from "@/config/business";
 
 /**
  * Autenticación sencilla para el panel de administración.
@@ -10,7 +11,7 @@ import { cookies } from "next/headers";
  *   derivado (HMAC) de la contraseña, nunca la contraseña en texto plano.
  */
 
-export const ADMIN_COOKIE = "compache_admin";
+export const ADMIN_COOKIE = `${business.slug}_admin`;
 const SESSION_MAX_AGE = 60 * 60 * 8; // 8 horas
 
 /** Contraseña real (ignora vacío y placeholders `__...__`). */
@@ -32,7 +33,7 @@ export function verifyPassword(input: string): boolean {
 /** Token de sesión derivado de la contraseña (no reversible). */
 export function sessionToken(): string {
   const pw = adminPassword() ?? "";
-  return createHmac("sha256", pw).update("compache-admin-v1").digest("hex");
+  return createHmac("sha256", pw).update(`${business.slug}-admin-v1`).digest("hex");
 }
 
 export function isValidToken(token: string | undefined): boolean {

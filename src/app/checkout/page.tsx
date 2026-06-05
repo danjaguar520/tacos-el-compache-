@@ -53,7 +53,7 @@ export default function CheckoutPage() {
       // Guardamos la última orden para mostrarla en la confirmación (modo demo).
       try {
         sessionStorage.setItem(
-          "compache-last-order",
+          `${business.slug}-last-order`,
           JSON.stringify({
             orderId: data.orderId,
             name: name.trim(),

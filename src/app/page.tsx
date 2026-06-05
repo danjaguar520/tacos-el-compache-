@@ -2,18 +2,12 @@ import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
 import { ProductCard } from "@/components/menu/ProductCard";
 import { fetchMenu } from "@/lib/menu";
-
-const valores = [
-  { emoji: "🍲", titulo: "+10 guisos", sub: "distintos cada día" },
-  { emoji: "🔥", titulo: "Fuego lento", sub: "en cazuela de barro" },
-  { emoji: "❤️", titulo: "Recetas", sub: "de familia" },
-  { emoji: "🌮", titulo: "Al momento", sub: "tacos recién hechos" },
-];
+import { business } from "@/config/business";
 
 export default async function Home() {
   const { products } = await fetchMenu();
   const destacados = products
-    .filter((p) => p.category_slug === "tacos-de-guisos")
+    .filter((p) => p.category_slug === business.categoriaDestacada)
     .slice(0, 4);
 
   return (
@@ -45,7 +39,7 @@ export default async function Home() {
       {/* Propuesta de valor */}
       <section className="mx-auto max-w-3xl px-4 py-8">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {valores.map((v) => (
+          {business.valores.map((v) => (
             <div
               key={v.titulo}
               className="rounded-2xl bg-crema p-4 text-center shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/15 transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-tarjeta-hover)]"
@@ -76,13 +70,13 @@ export default async function Home() {
       {/* CTA tradición */}
       <section className="mx-auto mt-6 max-w-3xl px-4">
         <div className="rounded-3xl bg-chile px-6 py-10 text-center text-crema shadow-[var(--shadow-suave)]">
-          <h2 className="font-display text-3xl font-bold">Tradición en cada taco</h2>
+          <h2 className="font-display text-3xl font-bold">{business.ctaHome.titulo}</h2>
           <p className="mx-auto mt-2 max-w-md text-crema/85">
-            Cocinamos como en casa, con recetas de familia y los guisos que reconforten el alma.
+            {business.ctaHome.texto}
           </p>
           <div className="mt-6">
             <ButtonLink href="/nosotros" variant="secondary" size="lg">
-              Conoce nuestra historia
+              {business.ctaHome.boton}
             </ButtonLink>
           </div>
         </div>

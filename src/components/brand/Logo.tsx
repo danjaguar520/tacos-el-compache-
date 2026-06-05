@@ -1,12 +1,5 @@
 import Link from "next/link";
-
-/**
- * Marca de "Tacos El Compache de Ah Mun".
- *
- * Renderiza un logotipo tipográfico en estilo listón (banner) sobre el
- * acento naranja, fiel al Brand ID. Para usar el logo ilustrado real, coloca
- * el archivo en /public/logo.png y cambia `variant="image"`.
- */
+import { business } from "@/config/business";
 
 export function Logo({
   size = "md",
@@ -32,16 +25,16 @@ export function Logo({
         }}
         aria-hidden
       >
-        <span className="text-base leading-none">🌮</span>
+        <span className="text-base leading-none">{business.emoji}</span>
       </span>
       <span className="leading-none">
         <span
           className={`font-display font-bold uppercase tracking-wide text-chile ${scale}`}
         >
-          Tacos
+          {business.logoLinea1}
         </span>
         <span className="block text-[0.6em] font-semibold uppercase tracking-[0.18em] text-barro">
-          El Compache de Ah Mun
+          {business.logoLinea2}
         </span>
       </span>
     </span>
@@ -50,7 +43,7 @@ export function Logo({
   if (!asLink) return inner;
 
   return (
-    <Link href="/" aria-label="Inicio — Tacos El Compache de Ah Mun">
+    <Link href="/" aria-label={`Inicio — ${business.nombre}`}>
       {inner}
     </Link>
   );

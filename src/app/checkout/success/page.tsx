@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart-store";
 import { useHydrated } from "@/lib/use-hydrated";
 import { formatMXN } from "@/lib/format";
-import { whatsappUrl } from "@/config/business";
+import { business, whatsappUrl } from "@/config/business";
 
 interface LastOrder {
   orderId: string;
@@ -28,7 +28,7 @@ function SuccessInner() {
   const [order] = useState<LastOrder | null>(() => {
     if (typeof window === "undefined") return null;
     try {
-      const raw = sessionStorage.getItem("compache-last-order");
+      const raw = sessionStorage.getItem(`${business.slug}-last-order`);
       return raw ? (JSON.parse(raw) as LastOrder) : null;
     } catch {
       return null;
@@ -52,7 +52,7 @@ function SuccessInner() {
 
       <h1 className="mt-5 font-display text-4xl font-bold text-chile">¡Pedido confirmado!</h1>
       <p className="mt-2 text-frijol/70">
-        Gracias{hydrated && order?.name ? `, ${order.name}` : ""}. Ya estamos preparando tus tacos. 🌮
+        Gracias{hydrated && order?.name ? `, ${order.name}` : ""}. Ya estamos preparando tus {business.itemNombre}. 🌮
       </p>
       {shortId && (
         <p className="mt-2 text-sm text-frijol/50">

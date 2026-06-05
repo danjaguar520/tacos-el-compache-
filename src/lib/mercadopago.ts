@@ -1,5 +1,6 @@
 import "server-only";
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
+import { business } from "@/config/business";
 
 /**
  * Integración con Mercado Pago Checkout Pro.
@@ -67,7 +68,7 @@ export async function createPreference(params: {
             auto_return: "approved",
             notification_url: `${params.baseUrl}/api/webhooks/mercadopago`,
           }),
-      statement_descriptor: "EL COMPACHE",
+      statement_descriptor: business.mpDescriptor,
     },
   });
 
