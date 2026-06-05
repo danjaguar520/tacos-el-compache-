@@ -13,12 +13,12 @@ const sizes = {
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-chile text-crema shadow-[var(--shadow-btn-chile)] hover:bg-chile-700 hover:-translate-y-px hover:shadow-[var(--shadow-btn-chile-hover)] active:translate-y-px active:shadow-[var(--shadow-btn-chile-active)]",
+    "bg-chile text-crema shadow-[var(--shadow-btn-primary)] hover:bg-chile-700 hover:-translate-y-px hover:shadow-[var(--shadow-btn-primary-hover)] active:translate-y-px active:shadow-[var(--shadow-btn-primary-active)]",
   secondary:
-    "bg-maiz text-frijol shadow-[var(--shadow-btn-maiz)] hover:brightness-95 hover:-translate-y-px hover:shadow-[var(--shadow-btn-maiz-hover)] active:translate-y-px active:shadow-[var(--shadow-btn-maiz-active)]",
+    "bg-maiz text-frijol shadow-[var(--shadow-btn-secondary)] hover:brightness-95 hover:-translate-y-px hover:shadow-[var(--shadow-btn-secondary-hover)] active:translate-y-px active:shadow-[var(--shadow-btn-secondary-active)]",
   ghost: "bg-transparent text-chile hover:bg-chile/10 hover:-translate-y-px active:translate-y-px",
   whatsapp:
-    "bg-epazote text-crema shadow-[0_4px_0_0_#3d5c2e,0_6px_16px_-4px_rgb(90_122_69_/_0.35)] hover:brightness-95 hover:-translate-y-px active:translate-y-px active:shadow-none",
+    "bg-epazote text-crema shadow-[var(--shadow-btn-success)] hover:brightness-95 hover:-translate-y-px active:translate-y-px active:shadow-none",
 };
 
 function classes(variant: Variant, size: keyof typeof sizes, extra?: string) {

@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { business } from "@/config/business";
+import { theme } from "@/config/theme";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,16 +40,52 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#8b2e1d",
+  themeColor: theme.colors.primary,
   width: "device-width",
   initialScale: 1,
 };
+
+/** Maps theme.fonts.display to the loaded CSS variable font stack. */
+const displayFont =
+  theme.fonts.display === "fraunces"
+    ? "var(--font-fraunces), var(--font-cormorant), Georgia, serif"
+    : "var(--font-cormorant), Georgia, serif";
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es" className={`${inter.variable} ${cormorant.variable} ${fraunces.variable}`}>
+      {/*
+        Theme adapter — maps semantic color names from theme.ts to the
+        internal CSS token aliases used across all components.
+        Changing theme.ts is sufficient to retheme the entire site.
+
+        Internal alias → semantic role
+        --color-chile   → primary      (buttons, headings, prices)
+        --color-chile-700 → primaryDark (hover, shadow depth)
+        --color-frijol  → fg           (text, dark backgrounds)
+        --color-crema   → bg           (page surface, light cards)
+        --color-barro   → border       (rings, dividers, labels)
+        --color-maiz    → secondary    (secondary button, card tints)
+        --color-naranja → accent       (logo circle, section labels)
+        --color-epazote → success      (confirmation states)
+      */}
+      <head>
+        <style>{`
+          :root {
+            --color-chile:     ${theme.colors.primary};
+            --color-chile-700: ${theme.colors.primaryDark};
+            --color-frijol:    ${theme.colors.fg};
+            --color-crema:     ${theme.colors.bg};
+            --color-barro:     ${theme.colors.border};
+            --color-maiz:      ${theme.colors.secondary};
+            --color-naranja:   ${theme.colors.accent};
+            --color-epazote:   ${theme.colors.success};
+            --font-display:    ${displayFont};
+          }
+        `}</style>
+      </head>
       <body className="bg-textura min-h-dvh antialiased">
         <Header />
         {/* pb para que la barra inferior fija no tape el contenido en móvil */}
