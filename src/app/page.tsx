@@ -2,10 +2,11 @@ import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
 import { ProductCard } from "@/components/menu/ProductCard";
 import { fetchMenu } from "@/lib/menu";
-import { business } from "@/config/business";
+import { getBusiness, getBusinessId } from "@/lib/business-context";
 
 export default async function Home() {
-  const { products } = await fetchMenu();
+  const [business, businessId] = await Promise.all([getBusiness(), getBusinessId()]);
+  const { products } = await fetchMenu(businessId);
   const destacados = products
     .filter((p) => p.category_slug === business.categoriaDestacada)
     .slice(0, 4);

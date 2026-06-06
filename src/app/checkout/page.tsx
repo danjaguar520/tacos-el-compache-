@@ -10,6 +10,18 @@ import { formatMXN } from "@/lib/format";
 import { business } from "@/config/business";
 import type { DeliveryMethod } from "@/types";
 
+/** Derives the per-tenant sessionStorage key prefix at runtime. */
+function resolveOrderSlug(): string {
+  if (typeof window === "undefined") return business.slug;
+  const LOKAL_DOMAIN = process.env.NEXT_PUBLIC_LOKAL_DOMAIN ?? "lok-al.mx";
+  const host = window.location.hostname;
+  if (host.endsWith(`.${LOKAL_DOMAIN}`)) {
+    const sub = host.slice(0, host.length - LOKAL_DOMAIN.length - 1);
+    if (sub && /^[a-z0-9][a-z0-9-]{0,29}$/.test(sub)) return sub;
+  }
+  return process.env.NEXT_PUBLIC_BUSINESS_SLUG ?? business.slug;
+}
+
 export default function CheckoutPage() {
   const items = useCart((s) => s.items);
   const subtotal = useCart((s) => s.subtotalCents());
@@ -53,7 +65,7 @@ export default function CheckoutPage() {
       // Guardamos la última orden para mostrarla en la confirmación (modo demo).
       try {
         sessionStorage.setItem(
-          `${business.slug}-last-order`,
+          `${resolveOrderSlug()}-last-order`,
           JSON.stringify({
             orderId: data.orderId,
             name: name.trim(),

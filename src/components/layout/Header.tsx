@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 import { CartBadge } from "@/components/layout/CartBadge";
-import { business } from "@/config/business";
+import { getBusiness } from "@/lib/business-context";
 
 /** Encabezado superior. Logo + acceso rápido al carrito. */
-export function Header() {
+export async function Header() {
+  const business = await getBusiness();
+
   return (
     <header className="sticky top-0 z-40 border-b border-barro/15 bg-crema/90 backdrop-blur">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">

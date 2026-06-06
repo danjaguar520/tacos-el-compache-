@@ -20,7 +20,12 @@ interface DbProductRow {
   categories: { slug: string } | null;
 }
 
-export async function fetchMenu(): Promise<{
+/**
+ * businessId — when provided, restricts categories and products to that tenant.
+ * Pass null/undefined in legacy mode (pre-migration or static fallback).
+ * This mirrors the pattern used in getVerifiedProduct().
+ */
+export async function fetchMenu(businessId?: string | null): Promise<{
   categories: Category[];
   products: Product[];
   source: "supabase" | "static";
@@ -29,13 +34,22 @@ export async function fetchMenu(): Promise<{
     const supabase = getPublicClient();
     if (supabase) {
       try {
+        // Build scoped or unscoped queries depending on whether businessId is known.
+        let catQuery  = supabase.from("categories").select("*").order("sort_order");
+        let prodQuery = supabase
+          .from("products")
+          .select("*, categories(slug)")
+          .eq("available", true)
+          .order("sort_order");
+
+        if (businessId) {
+          catQuery  = catQuery.eq("business_id", businessId)   as typeof catQuery;
+          prodQuery = prodQuery.eq("business_id", businessId)  as typeof prodQuery;
+        }
+
         const [{ data: cats }, { data: prods }] = await Promise.all([
-          supabase.from("categories").select("*").order("sort_order"),
-          supabase
-            .from("products")
-            .select("*, categories(slug)")
-            .eq("available", true)
-            .order("sort_order"),
+          catQuery,
+          prodQuery,
         ]);
 
         if (cats?.length && prods?.length) {
@@ -68,18 +82,31 @@ export async function fetchMenu(): Promise<{
  * Busca un producto por id, verificando el precio contra la fuente de verdad
  * (Supabase si está disponible, si no el menú estático).
  * Se usa en el checkout para NO confiar en el precio que envía el cliente.
+ *
+ * businessId — when provided, restricts the lookup to that tenant's products.
+ * This prevents a tenant from referencing a product UUID belonging to another
+ * business. Pass null/undefined in legacy mode (pre-migration or static fallback).
  */
-export async function getVerifiedProduct(id: string): Promise<Product | null> {
+export async function getVerifiedProduct(
+  id: string,
+  businessId?: string | null,
+): Promise<Product | null> {
   if (isSupabaseConfigured()) {
     const supabase = getPublicClient();
     if (supabase) {
       try {
-        const { data } = await supabase
+        // Build the base query; scope to the tenant when businessId is known.
+        let query = supabase
           .from("products")
           .select("*, categories(slug)")
           .eq("id", id)
-          .eq("available", true)
-          .maybeSingle();
+          .eq("available", true);
+
+        if (businessId) {
+          query = query.eq("business_id", businessId) as typeof query;
+        }
+
+        const { data } = await query.maybeSingle();
         if (data) {
           const p = data as DbProductRow;
           return {
@@ -94,7 +121,7 @@ export async function getVerifiedProduct(id: string): Promise<Product | null> {
             sort_order: p.sort_order,
           };
         }
-        // Supabase respondió pero el producto no existe / no disponible.
+        // Supabase respondió pero el producto no existe / no disponible / no pertenece al tenant.
         return null;
       } catch (err) {
         // Supabase inalcanzable: caer al menú estático como respaldo.

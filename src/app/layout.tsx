@@ -1,11 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Cormorant_Garamond, Fraunces } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { BottomNav } from "@/components/layout/BottomNav";
-import { business } from "@/config/business";
-import { theme } from "@/config/theme";
+import { BusinessSiteNav } from "@/components/layout/BusinessSiteNav";
+import { Header }          from "@/components/layout/Header";
+import { Footer }          from "@/components/layout/Footer";
+import { getBusinessContext } from "@/lib/business-context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,40 +25,58 @@ const fraunces = Fraunces({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: `${business.nombre} — ${business.lema}`,
-    template: `%s · ${business.nombre}`,
-  },
-  description: business.descripcion,
-  openGraph: {
-    title: business.nombre,
-    description: business.lema,
-    type: "website",
-  },
-};
+// ── Dynamic metadata (reads business from DB or static fallback) ──────────────
 
-export const viewport: Viewport = {
-  themeColor: theme.colors.primary,
-  width: "device-width",
-  initialScale: 1,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { config: b } = await getBusinessContext();
+  return {
+    title: {
+      default: `${b.nombre} — ${b.lema}`,
+      template: `%s · ${b.nombre}`,
+    },
+    description: b.descripcion,
+    openGraph: {
+      title:       b.nombre,
+      description: b.lema,
+      type:        "website",
+    },
+  };
+}
 
-/** Maps theme.fonts.display to the loaded CSS variable font stack. */
-const displayFont =
-  theme.fonts.display === "fraunces"
-    ? "var(--font-fraunces), var(--font-cormorant), Georgia, serif"
-    : "var(--font-cormorant), Georgia, serif";
+export async function generateViewport(): Promise<Viewport> {
+  const { theme: t } = await getBusinessContext();
+  return {
+    themeColor:   t.colors.primary,
+    width:        "device-width",
+    initialScale: 1,
+  };
+}
 
-export default function RootLayout({
+// ── Root layout ───────────────────────────────────────────────────────────────
+
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const { config: b, theme: t, fromDB, slug } = await getBusinessContext();
+
+  // Map theme.fonts.display to the actual CSS variable font stack.
+  // Both Fraunces and Cormorant are pre-loaded above — no build change needed.
+  const displayFont =
+    (t.fonts?.display ?? "fraunces") === "fraunces"
+      ? "var(--font-fraunces), var(--font-cormorant), Georgia, serif"
+      : "var(--font-cormorant), Georgia, serif";
+
   return (
-    <html lang="es" className={`${inter.variable} ${cormorant.variable} ${fraunces.variable}`}>
+    <html
+      lang="es"
+      className={`${inter.variable} ${cormorant.variable} ${fraunces.variable}`}
+      data-business={slug}
+      data-source={fromDB ? "db" : "static"}
+    >
       {/*
-        Theme adapter — maps semantic color names from theme.ts to the
+        Theme adapter — maps semantic color names from theme config to the
         internal CSS token aliases used across all components.
-        Changing theme.ts is sufficient to retheme the entire site.
+        Sprint 5D-2: reads from DB when available, static file as fallback.
 
         Internal alias → semantic role
         --color-chile   → primary      (buttons, headings, prices)
@@ -74,24 +91,22 @@ export default function RootLayout({
       <head>
         <style>{`
           :root {
-            --color-chile:     ${theme.colors.primary};
-            --color-chile-700: ${theme.colors.primaryDark};
-            --color-frijol:    ${theme.colors.fg};
-            --color-crema:     ${theme.colors.bg};
-            --color-barro:     ${theme.colors.border};
-            --color-maiz:      ${theme.colors.secondary};
-            --color-naranja:   ${theme.colors.accent};
-            --color-epazote:   ${theme.colors.success};
+            --color-chile:     ${t.colors.primary};
+            --color-chile-700: ${t.colors.primaryDark};
+            --color-frijol:    ${t.colors.fg};
+            --color-crema:     ${t.colors.bg};
+            --color-barro:     ${t.colors.border};
+            --color-maiz:      ${t.colors.secondary};
+            --color-naranja:   ${t.colors.accent};
+            --color-epazote:   ${t.colors.success};
             --font-display:    ${displayFont};
           }
         `}</style>
       </head>
       <body className="bg-textura min-h-dvh antialiased">
-        <Header />
-        {/* pb para que la barra inferior fija no tape el contenido en móvil */}
-        <main className="pb-20 sm:pb-0">{children}</main>
-        <Footer />
-        <BottomNav />
+        <BusinessSiteNav header={<Header />} footer={<Footer />}>
+          {children}
+        </BusinessSiteNav>
       </body>
     </html>
   );

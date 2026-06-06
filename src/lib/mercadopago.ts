@@ -1,6 +1,5 @@
 import "server-only";
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
-import { business } from "@/config/business";
 
 /**
  * Integración con Mercado Pago Checkout Pro.
@@ -9,6 +8,10 @@ import { business } from "@/config/business";
  *
  * Si MP_ACCESS_TOKEN no está configurado → MODO SIMULADO:
  *   el pedido se marca como pagado y se redirige directo a /checkout/success.
+ *
+ * Sprint 5D-4: mpDescriptor se recibe como parámetro (multi-tenant).
+ * MP_ACCESS_TOKEN sigue siendo global por ahora; el token per-business
+ * (mp_token_enc) se implementa en un sprint posterior.
  */
 
 const accessToken = process.env.MP_ACCESS_TOKEN;
@@ -38,6 +41,8 @@ export async function createPreference(params: {
   shippingCost: number; // pesos
   payer: { name: string; phone: string };
   baseUrl: string;
+  /** Descriptor del negocio en el extracto bancario (máx. 13 chars). */
+  mpDescriptor: string;
 }): Promise<{ preferenceId: string; initPoint: string }> {
   const pref = new Preference(client());
 
@@ -68,7 +73,7 @@ export async function createPreference(params: {
             auto_return: "approved",
             notification_url: `${params.baseUrl}/api/webhooks/mercadopago`,
           }),
-      statement_descriptor: business.mpDescriptor,
+      statement_descriptor: params.mpDescriptor,
     },
   });
 

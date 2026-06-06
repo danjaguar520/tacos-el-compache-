@@ -2,15 +2,19 @@ import type { Metadata } from "next";
 import { fetchMenu } from "@/lib/menu";
 import { CategoryTabs } from "@/components/menu/CategoryTabs";
 import { ProductCard } from "@/components/menu/ProductCard";
-import { business } from "@/config/business";
+import { getBusiness, getBusinessId } from "@/lib/business-context";
 
-export const metadata: Metadata = {
-  title: "Menú",
-  description: business.menuSubtitulo,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const b = await getBusiness();
+  return {
+    title:       "Menú",
+    description: b.menuSubtitulo,
+  };
+}
 
 export default async function MenuPage() {
-  const { categories, products, source } = await fetchMenu();
+  const [business, businessId] = await Promise.all([getBusiness(), getBusinessId()]);
+  const { categories, products, source } = await fetchMenu(businessId);
 
   return (
     <div className="mx-auto max-w-3xl px-4 pt-6">

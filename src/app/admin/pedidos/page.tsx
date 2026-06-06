@@ -6,6 +6,7 @@ import { getAdminClient, isSupabaseWritable } from "@/lib/supabase/server";
 import { isAdminConfigured, isAuthenticated } from "@/lib/admin-auth";
 import { OrderStatusControls } from "@/components/admin/OrderStatusControls";
 import { LogoutButton } from "@/components/admin/LogoutButton";
+import { getBusinessId } from "@/lib/business-context";
 
 export const metadata: Metadata = { title: "Panel de Pedidos" };
 export const dynamic = "force-dynamic";
@@ -21,11 +22,21 @@ async function fetchOrders(): Promise<Order[]> {
   if (!isSupabaseWritable()) return [];
   const admin = getAdminClient();
   if (!admin) return [];
-  const { data } = await admin
+
+  // Filter by the current tenant's business_id (multi-tenant isolation).
+  // Falls back to unfiltered query when businessId is null (legacy / pre-migration mode).
+  const businessId = await getBusinessId();
+
+  const query = admin
     .from("orders")
     .select("*, order_items(*)")
     .order("created_at", { ascending: false })
     .limit(200);
+
+  const { data } = businessId
+    ? await query.eq("business_id", businessId)
+    : await query;
+
   return (data as Order[]) ?? [];
 }
 

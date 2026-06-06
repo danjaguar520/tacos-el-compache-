@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { CheckoutPayload } from "@/types";
 import { createOrder } from "@/lib/orders";
+import { getBusinessContext } from "@/lib/business-context";
 
 export const runtime = "nodejs";
 
@@ -36,7 +37,15 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await createOrder(body, getBaseUrl(req));
+    // Resolve business context for this request (multi-tenant).
+    const ctx = await getBusinessContext();
+
+    const result = await createOrder(body, getBaseUrl(req), {
+      slug:             ctx.slug,
+      fromDB:           ctx.fromDB,
+      costoEnvioCents:  ctx.config.costoEnvioCents,
+      mpDescriptor:     ctx.config.mpDescriptor,
+    });
     return NextResponse.json(result);
   } catch (err) {
     console.error("[checkout] error:", err);

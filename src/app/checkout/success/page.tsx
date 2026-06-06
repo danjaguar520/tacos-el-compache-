@@ -8,6 +8,18 @@ import { useHydrated } from "@/lib/use-hydrated";
 import { formatMXN } from "@/lib/format";
 import { business, whatsappUrl } from "@/config/business";
 
+/** Derives the per-tenant sessionStorage key prefix at runtime. */
+function resolveOrderSlug(): string {
+  if (typeof window === "undefined") return business.slug;
+  const LOKAL_DOMAIN = process.env.NEXT_PUBLIC_LOKAL_DOMAIN ?? "lok-al.mx";
+  const host = window.location.hostname;
+  if (host.endsWith(`.${LOKAL_DOMAIN}`)) {
+    const sub = host.slice(0, host.length - LOKAL_DOMAIN.length - 1);
+    if (sub && /^[a-z0-9][a-z0-9-]{0,29}$/.test(sub)) return sub;
+  }
+  return process.env.NEXT_PUBLIC_BUSINESS_SLUG ?? business.slug;
+}
+
 interface LastOrder {
   orderId: string;
   name: string;
@@ -28,7 +40,7 @@ function SuccessInner() {
   const [order] = useState<LastOrder | null>(() => {
     if (typeof window === "undefined") return null;
     try {
-      const raw = sessionStorage.getItem(`${business.slug}-last-order`);
+      const raw = sessionStorage.getItem(`${resolveOrderSlug()}-last-order`);
       return raw ? (JSON.parse(raw) as LastOrder) : null;
     } catch {
       return null;

@@ -8,7 +8,7 @@ import {
   createPreference,
   type PreferenceItem,
 } from "@/lib/mercadopago";
-import { business } from "@/config/business";
+import { resolveBusinessId, scopedInsert } from "@/lib/db-helpers";
 
 export interface CreateOrderResult {
   orderId: string;
@@ -18,17 +18,47 @@ export interface CreateOrderResult {
   simulated: boolean;
 }
 
+/** Business-specific settings resolved by the checkout route handler. */
+export interface OrderBusinessContext {
+  /** URL-safe slug for the business (e.g. "compache"). */
+  slug:            string;
+  /** True when config came from DB; false when using static fallback. */
+  fromDB:          boolean;
+  /** Costo de envío a domicilio en centavos. */
+  costoEnvioCents: number;
+  /** Descriptor que aparece en el extracto bancario del cliente. */
+  mpDescriptor:    string;
+}
+
 /**
  * Verifica el carrito contra la fuente de verdad, persiste el pedido y prepara
  * el pago. NO confía en los precios enviados por el cliente.
+ *
+ * businessCtx is resolved by the calling route handler from getBusinessContext().
+ * When omitted (legacy callers / tests) falls back to the static business config.
  */
 export async function createOrder(
-  payload: CheckoutPayload,
-  baseUrl: string,
+  payload:      CheckoutPayload,
+  baseUrl:      string,
+  businessCtx?: OrderBusinessContext,
 ): Promise<CreateOrderResult> {
   if (!payload.items?.length) {
     throw new Error("El carrito está vacío.");
   }
+
+  // Resolve business_id for multi-tenant DB writes.
+  // resolveBusinessId() handles missing table gracefully (returns null).
+  const admin = getAdminClient();
+  let businessId: string | null = null;
+
+  if (admin && businessCtx?.slug) {
+    businessId = await resolveBusinessId(admin, businessCtx.slug);
+  }
+
+  // Static fallback values when businessCtx is not provided.
+  const { business: staticBusiness } = await import("@/config/business");
+  const costoEnvioCents = businessCtx?.costoEnvioCents ?? staticBusiness.costoEnvioCents;
+  const mpDescriptor    = businessCtx?.mpDescriptor    ?? staticBusiness.mpDescriptor;
 
   // 1) Verificar productos y recalcular precios en el servidor.
   const lines: {
@@ -39,7 +69,9 @@ export async function createOrder(
   }[] = [];
 
   for (const item of payload.items) {
-    const product = await getVerifiedProduct(item.productId);
+    // Pass businessId so the lookup is scoped to this tenant's catalog.
+    // null → legacy mode (no cross-tenant risk: only one business exists).
+    const product = await getVerifiedProduct(item.productId, businessId);
     if (!product) {
       throw new Error(`Producto no disponible: ${item.productId}`);
     }
@@ -57,36 +89,40 @@ export async function createOrder(
     0,
   );
   const shippingCents =
-    payload.delivery_method === "domicilio" ? business.costoEnvioCents : 0;
+    payload.delivery_method === "domicilio" ? costoEnvioCents : 0;
   const totalCents = subtotalCents + shippingCents;
 
   // 2) Persistir el pedido (status pendiente) si Supabase está disponible.
-  const admin = getAdminClient();
   let orderId: string = randomUUID();
 
   if (admin) {
-    const { data: order, error } = await admin
-      .from("orders")
-      .insert({
-        customer_name: payload.customer_name,
-        customer_phone: payload.customer_phone,
-        notes: payload.notes || null,
-        delivery_method: payload.delivery_method,
-        status: "pendiente",
-        subtotal_cents: subtotalCents,
-        total_cents: totalCents,
-      })
-      .select("id")
-      .single();
+    const orderRow = {
+      customer_name:   payload.customer_name,
+      customer_phone:  payload.customer_phone,
+      notes:           payload.notes || null,
+      delivery_method: payload.delivery_method,
+      status:          "pendiente",
+      subtotal_cents:  subtotalCents,
+      total_cents:     totalCents,
+    };
+
+    // Use scopedInsert when we have a businessId; fall back to plain insert otherwise.
+    const insertQuery = businessId
+      ? scopedInsert(admin, "orders", businessId, orderRow)
+      : admin.from("orders").insert(orderRow);
+
+    const { data: order, error } = await insertQuery.select("id").single();
 
     if (error || !order) {
       throw new Error(`No se pudo crear el pedido: ${error?.message ?? "desconocido"}`);
     }
-    orderId = order.id as string;
+    orderId = (order as { id: string }).id;
 
-    const { error: itemsError } = await admin.from("order_items").insert(
-      lines.map((l) => ({ ...l, order_id: orderId })),
-    );
+    const itemRows = lines.map((l) => ({ ...l, order_id: orderId }));
+    const { error: itemsError } = businessId
+      ? await scopedInsert(admin, "order_items", businessId, itemRows)
+      : await admin.from("order_items").insert(itemRows);
+
     if (itemsError) {
       throw new Error(`No se pudieron guardar los productos: ${itemsError.message}`);
     }
@@ -108,6 +144,7 @@ export async function createOrder(
       shippingCost: shippingCents / 100,
       payer: { name: payload.customer_name, phone: payload.customer_phone },
       baseUrl,
+      mpDescriptor,
     });
 
     if (admin) {
@@ -123,12 +160,18 @@ export async function createOrder(
   // Modo simulado: marcar como pagado y redirigir a confirmación.
   if (admin) {
     await admin.from("orders").update({ status: "pagado" }).eq("id", orderId);
-    await admin.from("payments").insert({
-      order_id: orderId,
-      provider: "simulado",
-      status: "approved",
+
+    const paymentRow = {
+      order_id:    orderId,
+      provider:    "simulado",
+      status:      "approved",
       amount_cents: totalCents,
-    });
+    };
+    if (businessId) {
+      await scopedInsert(admin, "payments", businessId, paymentRow);
+    } else {
+      await admin.from("payments").insert(paymentRow);
+    }
   }
 
   return {

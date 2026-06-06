@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { business } from "@/config/business";
+import { getBusiness } from "@/lib/business-context";
 
 /** Pie de página cálido con franja de marca. */
-export function Footer() {
+export async function Footer() {
+  const business = await getBusiness();
+
   return (
     <footer className="mt-16 bg-textura-oscura text-crema/90">
       <div className="bg-chile py-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-crema">

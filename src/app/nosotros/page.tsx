@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { ButtonLink } from "@/components/ui/Button";
-import { business } from "@/config/business";
+import { getBusiness } from "@/lib/business-context";
 
-export const metadata: Metadata = {
-  title: "¿Quiénes Somos?",
-  description: business.nosotros.metaDescription,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const b = await getBusiness();
+  return {
+    title:       "¿Quiénes Somos?",
+    description: b.nosotros.metaDescription,
+  };
+}
 
-export default function NosotrosPage() {
+export default async function NosotrosPage() {
+  const business = await getBusiness();
   const { nosotros } = business;
 
   return (

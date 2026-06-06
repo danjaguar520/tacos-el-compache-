@@ -1,19 +1,22 @@
 import type { Metadata } from "next";
-import {
-  business,
-  direccionCompleta,
-  mapsEmbedUrl,
-  comoLlegarUrl,
-  whatsappUrl,
-} from "@/config/business";
 import { ButtonLink } from "@/components/ui/Button";
+import { getBusiness } from "@/lib/business-context";
 
 export const metadata: Metadata = {
   title: "Ubicación",
   description: "Encuéntranos, conoce nuestro horario y pide por WhatsApp.",
 };
 
-export default function UbicacionPage() {
+export default async function UbicacionPage() {
+  const business = await getBusiness();
+
+  // URL helpers derived from dynamic business data
+  const addr      = `${business.direccion.calle}, ${business.direccion.colonia}, ${business.direccion.ciudad}, ${business.direccion.cp}`;
+  const mapsEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(addr)}&z=16&output=embed`;
+  const mapsDir   = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}`;
+  const whatsapp  = `https://wa.me/${business.whatsapp}?text=${encodeURIComponent("¡Hola! Me gustaría hacer un pedido 🌮")}`;
+  const telHref   = `tel:${business.telefono.replace(/\s/g, "")}`;
+
   return (
     <div className="mx-auto max-w-3xl px-4 pt-6">
       <header className="text-center">
@@ -27,7 +30,7 @@ export default function UbicacionPage() {
       <div className="mt-6 overflow-hidden rounded-3xl shadow-[var(--shadow-suave)] ring-1 ring-barro/15">
         <iframe
           title="Mapa de ubicación"
-          src={mapsEmbedUrl()}
+          src={mapsEmbed}
           width="100%"
           height="280"
           loading="lazy"
@@ -42,9 +45,9 @@ export default function UbicacionPage() {
           <h2 className="flex items-center gap-2 font-display text-xl font-bold text-frijol">
             📍 Dirección
           </h2>
-          <p className="mt-2 text-frijol/75">{direccionCompleta()}</p>
+          <p className="mt-2 text-frijol/75">{addr}</p>
           <ButtonLink
-            href={comoLlegarUrl()}
+            href={mapsDir}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 w-full"
@@ -74,7 +77,7 @@ export default function UbicacionPage() {
         <h2 className="font-display text-xl font-bold text-frijol">Contáctanos</h2>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
           <ButtonLink
-            href={whatsappUrl("¡Hola! Me gustaría hacer un pedido 🌮")}
+            href={whatsapp}
             target="_blank"
             rel="noopener noreferrer"
             variant="whatsapp"
@@ -84,7 +87,7 @@ export default function UbicacionPage() {
             WhatsApp
           </ButtonLink>
           <ButtonLink
-            href={`tel:${business.telefono.replace(/\s/g, "")}`}
+            href={telHref}
             variant="secondary"
             size="lg"
             className="flex-1"
