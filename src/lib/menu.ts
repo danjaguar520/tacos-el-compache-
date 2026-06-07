@@ -1,7 +1,7 @@
 import "server-only";
 import type { Category, Product } from "@/types";
 import { getStaticMenu, findStaticProduct } from "@/data/menu";
-import { getPublicClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { getAdminClient, isSupabaseWritable } from "@/lib/supabase/server";
 
 /**
  * Capa de acceso al menú.
@@ -30,8 +30,8 @@ export async function fetchMenu(businessId?: string | null): Promise<{
   products: Product[];
   source: "supabase" | "static";
 }> {
-  if (isSupabaseConfigured()) {
-    const supabase = getPublicClient();
+  if (isSupabaseWritable()) {
+    const supabase = getAdminClient();
     if (supabase) {
       try {
         // Build scoped or unscoped queries depending on whether businessId is known.
@@ -108,8 +108,8 @@ export async function getVerifiedProduct(
   id: string,
   businessId?: string | null,
 ): Promise<Product | null> {
-  if (isSupabaseConfigured()) {
-    const supabase = getPublicClient();
+  if (isSupabaseWritable()) {
+    const supabase = getAdminClient();
     if (supabase) {
       try {
         // Build the base query; scope to the tenant when businessId is known.
