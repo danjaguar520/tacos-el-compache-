@@ -200,17 +200,28 @@ export function mapPaymentStatus(mpStatus: string): OrderStatus {
   }
 }
 
-/** Obtiene un pedido con sus líneas (para la página de confirmación). */
-export async function getOrder(orderId: string): Promise<Order | null> {
+/**
+ * Obtiene un pedido con sus líneas (para la página de confirmación).
+ *
+ * businessId — when provided, restricts the lookup to that tenant's orders.
+ * Pass null/undefined in legacy mode (pre-migration or static fallback).
+ * This mirrors the pattern used in getVerifiedProduct().
+ */
+export async function getOrder(orderId: string, businessId?: string | null): Promise<Order | null> {
   if (!isSupabaseWritable()) return null;
   const admin = getAdminClient();
   if (!admin) return null;
 
-  const { data } = await admin
+  let query = admin
     .from("orders")
     .select("*, order_items(*)")
-    .eq("id", orderId)
-    .maybeSingle();
+    .eq("id", orderId);
+
+  if (businessId) {
+    query = query.eq("business_id", businessId) as typeof query;
+  }
+
+  const { data } = await query.maybeSingle();
 
   return (data as Order) ?? null;
 }

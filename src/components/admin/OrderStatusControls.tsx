@@ -15,9 +15,11 @@ const OPTIONS: { status: OrderStatus; label: string; active: string }[] = [
 export function OrderStatusControls({
   orderId,
   current,
+  businessId,
 }: {
   orderId: string;
   current: OrderStatus;
+  businessId?: string | null;
 }) {
   const [status, setStatus] = useState<OrderStatus>(current);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export function OrderStatusControls({
     setStatus(next); // optimista
     setError(null);
     startTransition(async () => {
-      const res = await updateOrderStatus(orderId, next);
+      const res = await updateOrderStatus(orderId, next, businessId);
       if (!res.ok) {
         setStatus(prev); // revertir
         setError(res.error ?? "No se pudo actualizar.");

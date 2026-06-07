@@ -39,10 +39,18 @@ export async function logout(): Promise<void> {
   redirect("/admin/login");
 }
 
-/** Cambia el estado de un pedido (requiere sesión válida + Supabase). */
+/**
+ * Cambia el estado de un pedido (requiere sesión válida + Supabase).
+ *
+ * businessId — when provided, restricts the update to that tenant's orders
+ * (prevents an authenticated admin of one tenant from altering another
+ * tenant's order by guessing/knowing its UUID). Pass null/undefined in
+ * legacy mode (pre-migration or static fallback).
+ */
 export async function updateOrderStatus(
   orderId: string,
   status: OrderStatus,
+  businessId?: string | null,
 ): Promise<{ ok: boolean; error?: string }> {
   if (!(await isAuthenticated())) {
     return { ok: false, error: "No autorizado." };
@@ -56,7 +64,12 @@ export async function updateOrderStatus(
     return { ok: false, error: "Supabase no está configurado." };
   }
 
-  const { error } = await admin.from("orders").update({ status }).eq("id", orderId);
+  let query = admin.from("orders").update({ status }).eq("id", orderId);
+  if (businessId) {
+    query = query.eq("business_id", businessId) as typeof query;
+  }
+
+  const { error } = await query;
   if (error) {
     return { ok: false, error: error.message };
   }

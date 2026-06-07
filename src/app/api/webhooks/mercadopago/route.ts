@@ -68,6 +68,11 @@ export async function POST(req: Request) {
         await admin.from("payments").insert(paymentRow);
       }
 
+      // No explicit business_id filter here: orderId is our own UUID, generated
+      // when the order was created and sent to MP as external_reference — MP
+      // returns it verbatim, so this update can only ever target the single
+      // order it already belongs to (the same one businessId was derived from
+      // two queries above). There is no cross-tenant selection surface.
       await admin
         .from("orders")
         .update({ status: mapPaymentStatus(status), mp_payment_id: String(payment.id) })

@@ -18,14 +18,10 @@ const COLUMNAS: { status: OrderStatus; label: string; color: string }[] = [
   { status: "cancelado", label: "Cancelados", color: "bg-chile" },
 ];
 
-async function fetchOrders(): Promise<Order[]> {
+async function fetchOrders(businessId: string | null): Promise<Order[]> {
   if (!isSupabaseWritable()) return [];
   const admin = getAdminClient();
   if (!admin) return [];
-
-  // Filter by the current tenant's business_id (multi-tenant isolation).
-  // Falls back to unfiltered query when businessId is null (legacy / pre-migration mode).
-  const businessId = await getBusinessId();
 
   const query = admin
     .from("orders")
@@ -46,7 +42,8 @@ export default async function PanelPedidosPage() {
     redirect("/admin/login");
   }
 
-  const orders = await fetchOrders();
+  const businessId = await getBusinessId();
+  const orders = await fetchOrders(businessId);
   const configured = isSupabaseWritable();
 
   return (
@@ -93,7 +90,7 @@ export default async function PanelPedidosPage() {
                   {items.length === 0 ? (
                     <p className="px-1 py-6 text-center text-xs text-frijol/40">Sin pedidos</p>
                   ) : (
-                    items.map((o) => <OrderCard key={o.id} order={o} />)
+                    items.map((o) => <OrderCard key={o.id} order={o} businessId={businessId} />)
                   )}
                 </div>
               </section>
@@ -105,7 +102,7 @@ export default async function PanelPedidosPage() {
   );
 }
 
-function OrderCard({ order }: { order: Order }) {
+function OrderCard({ order, businessId }: { order: Order; businessId: string | null }) {
   const fecha = new Date(order.created_at).toLocaleString("es-MX", {
     day: "2-digit",
     month: "short",
@@ -134,7 +131,7 @@ function OrderCard({ order }: { order: Order }) {
       )}
       <p className="mt-2 text-[0.7rem] text-frijol/40">{fecha}</p>
 
-      <OrderStatusControls orderId={order.id} current={order.status} />
+      <OrderStatusControls orderId={order.id} current={order.status} businessId={businessId} />
     </article>
   );
 }
