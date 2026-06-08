@@ -51,23 +51,8 @@ export async function fetchMenu(businessId?: string | null): Promise<{
           catQuery,
           prodQuery,
         ]);
-        const { data: cats, error: catsError, status: catsStatus } = catsRes;
-        const { data: prods, error: prodsError, status: prodsStatus } = prodsRes;
-
-        // TEMP DIAGNOSTIC — Sprint 5D-9F-D.2 — remove after root cause confirmed.
-        console.log("[fetchMenu:diag]", {
-          businessId: businessId ?? null,
-          catsLength: cats?.length ?? null,
-          prodsLength: prods?.length ?? null,
-          catsStatus,
-          prodsStatus,
-          catsError: catsError
-            ? { code: catsError.code, message: catsError.message, hint: catsError.hint }
-            : null,
-          prodsError: prodsError
-            ? { code: prodsError.code, message: prodsError.message, hint: prodsError.hint }
-            : null,
-        });
+        const { data: cats } = catsRes;
+        const { data: prods } = prodsRes;
 
         if (cats?.length && prods?.length) {
           const categories = cats as Category[];

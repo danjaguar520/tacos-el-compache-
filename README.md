@@ -43,9 +43,19 @@ Sin configurar nada, la app arranca en **modo demo**: el menú viene de
 3. Copia en `.env.local` la URL, la `anon key` y la `service_role key`
    (Project Settings → API).
 
-Tablas: `categories`, `products`, `customers`, `orders`, `order_items`, `payments`.
-Precios almacenados en **centavos**. RLS activo: lectura pública del menú; escrituras solo
-con `service_role` desde el servidor.
+Tablas: `categories`, `products`, `customers`, `orders`, `order_items`, `payments`,
+`businesses`. Precios almacenados en **centavos**.
+
+**Multi-tenant**: cada fila de `categories` / `products` / `orders` / `order_items` /
+`payments` está aislada por `business_id`; el negocio activo se resuelve en `proxy.ts`
+a partir del dominio/slug entrante.
+
+**RLS activo en modo defensa en profundidad**: las políticas actuales operan en modo
+lockdown defensivo para clientes anon/authenticated. Toda lectura y escritura de la
+aplicación ocurre del lado del servidor mediante `service_role` (que omite RLS por
+diseño). Las políticas quedaron preparadas para soportar aislamiento activo por tenant
+en el futuro mediante `current_business_id()` y propagación de contexto de tenant, sin
+requerir rediseño adicional.
 
 ## 💳 Mercado Pago
 
