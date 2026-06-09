@@ -2,6 +2,7 @@ import { getAdminClient } from "@/lib/supabase/server";
 import { BusinessCard } from "@/components/marketplace/BusinessCard";
 import { ButtonLink } from "@/components/ui/Button";
 import { HowItWorks } from "@/components/marketplace/HowItWorks";
+import { PlansSeed } from "@/components/marketplace/PlansSeed";
 import type { MarketplaceBiz } from "@/components/marketplace/BusinessCard";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -96,6 +97,8 @@ export default async function NegociosPage() {
       </section>
 
       <HowItWorks />
+
+      <PlansSeed />
 
       {/* Owner CTA — before grid for mobile visibility */}
       <section className="border-y border-barro/15 bg-maiz/30 px-4 py-12 text-center">
