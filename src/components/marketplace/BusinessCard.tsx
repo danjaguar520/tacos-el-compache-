@@ -18,7 +18,7 @@ const PLAN_BADGE: Record<MarketplaceBiz["plan"], { label: string; cls: string }>
 
 function businessUrl(slug: string, customDomain: string | null): string {
   if (customDomain) return `https://${customDomain}`;
-  return `https://${slug}.lok-al.mx`;
+  return `/negocios/${slug}`;
 }
 
 export function BusinessCard({
