@@ -29,7 +29,7 @@ const DEFAULT_SLUG =
   process.env.NEXT_PUBLIC_BUSINESS_SLUG ?? "compache";
 
 /** Paths that bypass slug injection. */
-const BYPASS_PREFIXES = ["/factory", "/_next", "/images", "/api/factory"];
+const BYPASS_PREFIXES = ["/factory", "/_next", "/images", "/api/factory", "/negocios"];
 const BYPASS_EXACT    = new Set(["/favicon.ico"]);
 
 export function proxy(req: NextRequest): NextResponse {
