@@ -115,4 +115,9 @@ export interface DbBusinessConfig {
     ];
     ctaTitulo: string;
   };
+
+  // ── Assets ────────────────────────────────────────────────────
+  // Public Storage URLs set at publish time. Absent on older configs.
+  banner_url?: string;
+  logo_url?:   string;
 }

@@ -16,7 +16,10 @@ import type { FactoryDraft } from "@/lib/factory/json-types";
 import type { DbBusinessConfig } from "@/lib/factory/db-types";
 import { TIPO_DEFAULTS, interpolate } from "@/lib/factory/derivations";
 
-export function draftToDbConfig(draft: FactoryDraft): DbBusinessConfig {
+export function draftToDbConfig(
+  draft: FactoryDraft,
+  assetUrls?: { banner_url?: string; logo_url?: string },
+): DbBusinessConfig {
   const { businessConfig: bc, generatedContent: gc } = draft;
   const d  = TIPO_DEFAULTS[bc.tipo];
   const iv = { nombre: bc.nombre, ciudad: bc.ciudad, itemNombre: d.itemNombre };
@@ -121,5 +124,9 @@ export function draftToDbConfig(draft: FactoryDraft): DbBusinessConfig {
           ],
           ctaTitulo: d.nosotrosCtaTitulo,
         },
+
+    // ── Assets ────────────────────────────────────────────────────
+    banner_url: assetUrls?.banner_url,
+    logo_url:   assetUrls?.logo_url,
   };
 }
