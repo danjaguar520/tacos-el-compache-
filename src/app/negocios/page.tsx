@@ -1,6 +1,7 @@
 import { getAdminClient } from "@/lib/supabase/server";
 import { BusinessCard } from "@/components/marketplace/BusinessCard";
 import { ButtonLink } from "@/components/ui/Button";
+import { HowItWorks } from "@/components/marketplace/HowItWorks";
 import type { MarketplaceBiz } from "@/components/marketplace/BusinessCard";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -21,7 +22,7 @@ const OWNER_BENEFITS = [
   "Tu página web con menú en línea",
   "Aparece en este marketplace",
   "Acepta pedidos por WhatsApp y web",
-  "Gratis para siempre en plan básico",
+  "Gratis para siempre — sin tarjeta de crédito",
 ] as const;
 
 // ── Data layer ────────────────────────────────────────────────────────────────
@@ -73,11 +74,11 @@ export default async function NegociosPage() {
       {/* Hero */}
       <section className="bg-textura-oscura px-4 py-16 text-center">
         <h1 className="font-display text-4xl font-bold text-crema sm:text-5xl">
-          Descubre negocios locales en tu ciudad
+          Negocios locales con menú y pedidos online
         </h1>
         <p className="mx-auto mt-4 max-w-md text-crema/70">
-          Restaurantes, cafés, barberías y más — con menú online,
-          pedidos reales y horarios directos desde su página.
+          Cada negocio tiene su propia página — menú real, horarios directos
+          y pedidos por WhatsApp. Sin intermediarios.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <ButtonLink href="#negocios" variant="secondary">
@@ -87,17 +88,19 @@ export default async function NegociosPage() {
             Publicar el mío →
           </ButtonLink>
         </div>
-        {count > 0 && (
-          <p className="mt-6 text-sm text-crema/40">
-            🏪 {count} negocio{count !== 1 ? "s" : ""} activo{count !== 1 ? "s" : ""} en la plataforma
-          </p>
-        )}
+        <p className="mt-6 text-sm text-crema/40">
+          {count >= 5
+            ? `🏪 ${count} negocios activos en la plataforma`
+            : "Los primeros negocios ya están en la plataforma."}
+        </p>
       </section>
+
+      <HowItWorks />
 
       {/* Owner CTA — before grid for mobile visibility */}
       <section className="border-y border-barro/15 bg-maiz/30 px-4 py-12 text-center">
         <h2 className="font-display text-2xl font-bold text-frijol">
-          ¿Tienes un negocio local?
+          ¿Listo para publicar tu negocio?
         </h2>
         <ul className="mx-auto mt-4 max-w-xs space-y-2 text-left text-sm text-frijol/70">
           {OWNER_BENEFITS.map((benefit) => (
@@ -109,7 +112,7 @@ export default async function NegociosPage() {
         </ul>
         <div className="mt-6">
           <ButtonLink href="/factory">
-            Crear mi página gratis en 10 min →
+            Crear mi página gratis →
           </ButtonLink>
         </div>
       </section>
