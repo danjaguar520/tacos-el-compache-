@@ -7,14 +7,16 @@ import { getAdminClient } from "@/lib/supabase/server";
 import { business as staticBusiness } from "@/config/business";
 import { theme as staticTheme }       from "@/config/theme";
 
+import type { DbBusinessConfig } from "@/lib/factory/db-types";
+
 // ── Types ────────────────────────────────────────────────────────────────────────
 
 /**
- * Full business configuration shape.
- * Derived from the static business.ts type so it's always in sync.
+ * Full business configuration shape — matches businesses.config (JSONB).
+ * Defined in db-types.ts so the Factory normalizer and runtime share one contract.
  * When read from DB (businesses.config), cast to this type.
  */
-export type BusinessConfig = typeof staticBusiness;
+export type BusinessConfig = DbBusinessConfig;
 
 /**
  * Visual theme configuration shape.
@@ -80,7 +82,7 @@ export const getBusinessContext = cache(async (): Promise<BusinessContext> => {
         if (dbConfig?.nombre) {
           return {
             slug,
-            config: dbConfig as unknown as BusinessConfig,
+            config: dbConfig as unknown as DbBusinessConfig,
             theme:  themeWithFallback(dbTheme),
             fromDB: true,
           };
@@ -98,7 +100,7 @@ export const getBusinessContext = cache(async (): Promise<BusinessContext> => {
   // ── Static fallback ────────────────────────────────────────────────
   return {
     slug,
-    config: staticBusiness as unknown as BusinessConfig,
+    config: staticBusiness as unknown as DbBusinessConfig,
     theme:  staticTheme    as unknown as ThemeConfig,
     fromDB: false,
   };

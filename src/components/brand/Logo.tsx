@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { business } from "@/config/business";
-import { theme } from "@/config/theme";
+import { getBusinessContext } from "@/lib/business-context";
 
 const sizes = {
   sm: { container: 26, text: "text-sm",              imgSize: 80  },
@@ -9,7 +8,7 @@ const sizes = {
   lg: { container: 44, text: "text-2xl sm:text-3xl", imgSize: 160 },
 } as const;
 
-export function Logo({
+export async function Logo({
   size = "md",
   asLink = true,
 }: {
@@ -17,14 +16,15 @@ export function Logo({
   asLink?: boolean;
 }) {
   const { container, text, imgSize } = sizes[size];
+  const { config: b, theme: t } = await getBusinessContext();
 
   const inner =
-    theme.logo.type === "image" ? (
+    t.logo.type === "image" ? (
       // Image logo — requires public/images/logo.png
       <span className="inline-flex items-center">
         <Image
           src="/images/logo.png"
-          alt={business.nombre}
+          alt={b.nombre}
           width={imgSize}
           height={container}
           className="object-contain"
@@ -39,14 +39,14 @@ export function Logo({
           style={{ width: container, height: container }}
           aria-hidden
         >
-          <span className="text-base leading-none">{business.emoji}</span>
+          <span className="text-base leading-none">{b.emoji}</span>
         </span>
         <span className="leading-none">
           <span className={`font-display font-bold uppercase tracking-wide text-chile ${text}`}>
-            {business.logoLinea1}
+            {b.logoLinea1}
           </span>
           <span className="block text-[0.6em] font-semibold uppercase tracking-[0.18em] text-barro">
-            {business.logoLinea2}
+            {b.logoLinea2}
           </span>
         </span>
       </span>
@@ -55,7 +55,7 @@ export function Logo({
   if (!asLink) return inner;
 
   return (
-    <Link href="/" aria-label={`Inicio — ${business.nombre}`}>
+    <Link href="/" aria-label={`Inicio — ${b.nombre}`}>
       {inner}
     </Link>
   );
