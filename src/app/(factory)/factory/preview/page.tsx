@@ -10,6 +10,7 @@ import { PreviewNosotros } from "@/components/factory/preview/PreviewNosotros";
 import { PreviewMenu }     from "@/components/factory/preview/PreviewMenu";
 import type { Categoria, HorarioBloque, BusinessType, ThemePreset } from "@/lib/factory/types";
 import type { ManualFactualData }      from "@/lib/factory/ai/types";
+import type { FactoryDraft, ThemeConfig } from "@/lib/factory/json-types";
 
 type Tab = "identidad" | "home" | "nosotros" | "menu";
 
@@ -23,7 +24,10 @@ const TABS: Array<{ key: Tab; label: string }> = [
 export default function FactoryPreviewPage() {
   const router     = useRouter();
   const [tab, setTab]         = useState<Tab>("identidad");
-  const [downloading, setDl]  = useState(false);
+  const [downloading, setDl]       = useState(false);
+  const [publishing, setPub]        = useState(false);
+  const [publishResult, setPublishResult] = useState<{ slug: string; businessId: string } | null>(null);
+  const [publishError, setPublishError]   = useState<string | null>(null);
 
   const draft    = useFactoryStore((s) => s.draft);
   const theme    = useFactoryStore((s) => s.theme);
@@ -110,6 +114,80 @@ export default function FactoryPreviewPage() {
     }
   }
 
+  async function handlePublish() {
+    if (!generated) return;
+    setPub(true);
+    setPublishError(null);
+    try {
+      const payload: FactoryDraft = {
+        schemaVersion: "1.0",
+        slug,
+        businessConfig: {
+          nombre,
+          slug,
+          tipo:            (draft.tipo        as BusinessType) ?? "otro",
+          lema:            (draft.lema        as string) ?? "",
+          descripcion:     (draft.descripcion as string) ?? "",
+          logoLinea1:      l1,
+          logoLinea2:      l2,
+          emoji,
+          logoType:        (theme.logo?.type ?? "text") as "text" | "image",
+          telefono:        (draft.telefono    as string) ?? "",
+          whatsapp:        (draft.whatsapp    as string) ?? "",
+          calle:           (draft.calle       as string) ?? "",
+          colonia:         (draft.colonia     as string) ?? "",
+          ciudad:          (draft.ciudad      as string) ?? "",
+          cp:              (draft.cp          as string) ?? "",
+          lat:             (draft.lat         as number | null) ?? null,
+          lng:             (draft.lng         as number | null) ?? null,
+          horario,
+          costoEnvioPesos: (draft.costoEnvioPesos as number) ?? 0,
+          zonaCobertura:   (draft.zonaCobertura   as string) ?? (draft.ciudad as string) ?? "",
+          categorias,
+          themePreset:     preset,
+          primaryHex:      primary,
+          fontStyle:       (theme.fonts?.display ?? "fraunces") as "fraunces" | "cormorant",
+          mpDescriptor:    (draft.mpDescriptor as string)
+                           ?? nombre.toUpperCase().replace(/[^A-Z0-9 ]/g, "").slice(0, 13),
+        },
+        themeConfig: {
+          schemaVersion: "1.0",
+          colors: theme.colors,
+          fonts:  theme.fonts ?? { display: "fraunces" as const },
+          logo:   theme.logo  ?? { type:    "text"     as const },
+        } as ThemeConfig,
+        generatedContent: generated,
+        lastModified:     new Date().toISOString(),
+        fromAI,
+      };
+
+      const res  = await fetch("/api/factory/publish", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload),
+      });
+      const data = await res.json() as Record<string, unknown>;
+
+      if (!res.ok) {
+        if (res.status === 409) {
+          setPublishError(`El slug "${slug}" ya está en uso. Edita el negocio y elige uno distinto.`);
+        } else if (res.status === 401) {
+          setPublishError("Sesión expirada. Recarga e inicia sesión de nuevo.");
+        } else {
+          setPublishError((data.details as string) ?? "Error al publicar. Intenta de nuevo.");
+        }
+        return;
+      }
+
+      setPublishResult({ slug: data.slug as string, businessId: data.businessId as string });
+      useFactoryStore.getState().clearDraft();
+    } catch {
+      setPublishError("Error de conexión. Verifica tu internet e intenta de nuevo.");
+    } finally {
+      setPub(false);
+    }
+  }
+
   return (
     <div className="flex min-h-dvh flex-col">
       {/* Header */}
@@ -185,10 +263,35 @@ export default function FactoryPreviewPage() {
             </button>
           </div>
 
-          {/* Despliegue directo a la plataforma compartida — 6D-C.2 */}
-          <div className="mt-4 rounded-2xl border border-dashed border-gray-200 px-4 py-3 text-center text-sm text-gray-400">
-            🚀 <strong>Publicar en Lok&apos;al</strong> — el alta directa en la plataforma compartida llega en 6D-C.2. El ZIP de esta sección queda como exportación manual opcional.
-          </div>
+          {/* Publicar en Lok'al — 6D-C.2 */}
+          {publishResult ? (
+            <div className="mt-4 rounded-2xl border border-green-200 bg-green-50 px-4 py-4 text-center">
+              <p className="font-semibold text-green-800">Negocio publicado correctamente</p>
+              <p className="mt-1 text-sm text-green-700">
+                Slug: <code className="rounded bg-green-100 px-1">{publishResult.slug}</code>
+              </p>
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={handlePublish}
+                disabled={publishing}
+                className="mt-4 w-full rounded-full bg-emerald-600 px-7 py-3 font-semibold text-white shadow hover:bg-emerald-700 disabled:opacity-50"
+              >
+                {publishing ? (
+                  <>
+                    <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    Publicando...
+                  </>
+                ) : (
+                  "🚀 Publicar en Lok’al"
+                )}
+              </button>
+              {publishError && (
+                <p className="mt-2 text-center text-sm text-red-600">{publishError}</p>
+              )}
+            </>
+          )}
         </div>
       </main>
     </div>
