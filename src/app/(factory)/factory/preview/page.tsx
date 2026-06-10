@@ -33,6 +33,7 @@ export default function FactoryPreviewPage() {
   const theme    = useFactoryStore((s) => s.theme);
   const generated = useFactoryStore((s) => s.generated);
   const bannerUrl = useFactoryStore((s) => s.bannerUrl);
+  const logoUrl   = useFactoryStore((s) => s.logoUrl);
   const fromAI    = useFactoryStore((s) => s.fromAI);
 
   const nombre    = (draft.nombre     as string)      ?? "Mi Negocio";
@@ -58,6 +59,21 @@ export default function FactoryPreviewPage() {
         </div>
       </div>
     );
+  }
+
+  async function uploadAsset(dataUrl: string, field: "banner" | "logo"): Promise<string | null> {
+    try {
+      const res = await fetch("/api/factory/upload-asset", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ dataUrl, field }),
+      });
+      if (!res.ok) return null;
+      const json = await res.json() as { url?: string };
+      return json.url ?? null;
+    } catch {
+      return null;
+    }
   }
 
   async function handleRegenerate() {
@@ -119,6 +135,17 @@ export default function FactoryPreviewPage() {
     setPub(true);
     setPublishError(null);
     try {
+      // ── Upload assets to Storage before publish ──────────────────
+      const assetUrls: { banner_url?: string; logo_url?: string } = {};
+      if (bannerUrl) {
+        const url = await uploadAsset(bannerUrl, "banner");
+        if (url) assetUrls.banner_url = url;
+      }
+      if (logoUrl) {
+        const url = await uploadAsset(logoUrl, "logo");
+        if (url) assetUrls.logo_url = url;
+      }
+
       const payload: FactoryDraft = {
         schemaVersion: "1.0",
         slug,
@@ -164,7 +191,7 @@ export default function FactoryPreviewPage() {
       const res  = await fetch("/api/factory/publish", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(payload),
+        body:    JSON.stringify({ ...payload, assetUrls }),
       });
       const data = await res.json() as Record<string, unknown>;
 

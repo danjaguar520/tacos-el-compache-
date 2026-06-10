@@ -46,9 +46,11 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   // ── V2: Parse body ────────────────────────────────────────────────────────
+  let rawBody: Record<string, unknown>;
   let draft: FactoryDraft;
   try {
-    draft = (await req.json()) as FactoryDraft;
+    rawBody = (await req.json()) as Record<string, unknown>;
+    draft = rawBody as unknown as FactoryDraft;
   } catch {
     return Response.json(
       { error: "validation", details: "Invalid JSON body" },
@@ -112,7 +114,10 @@ export async function POST(req: Request): Promise<Response> {
   // ── V8: Normalize draft → DbBusinessConfig ────────────────────────────────
   let dbConfig;
   try {
-    dbConfig = draftToDbConfig(draft);
+    const assetUrls = rawBody.assetUrls as
+      | { banner_url?: string; logo_url?: string }
+      | undefined;
+    dbConfig = draftToDbConfig(draft, assetUrls);
   } catch (err) {
     const details = err instanceof Error ? err.message : "normalization error";
     return Response.json({ error: "publish_failed", details }, { status: 500 });
