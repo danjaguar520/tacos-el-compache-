@@ -115,9 +115,32 @@ export default async function BusinessProfilePage({
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
 
+      {/* Banner */}
+      {cfg.banner_url && (
+        <div className="-mx-4 -mt-10 mb-8 h-40 overflow-hidden sm:h-52">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={cfg.banner_url}
+            alt=""
+            aria-hidden
+            className="h-full w-full object-cover"
+          />
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-start gap-4">
-        <span className="text-5xl" aria-hidden>{cfg.emoji ?? "🏪"}</span>
+        {cfg.logo_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={cfg.logo_url}
+            alt=""
+            aria-hidden
+            className="h-16 w-16 shrink-0 rounded-xl object-contain"
+          />
+        ) : (
+          <span className="text-5xl" aria-hidden>{cfg.emoji ?? "🏪"}</span>
+        )}
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="font-display text-2xl font-bold text-frijol">{biz.name}</h1>
