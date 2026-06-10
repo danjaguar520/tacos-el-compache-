@@ -44,6 +44,7 @@ function toMarketplaceBiz(row: RawBusiness): MarketplaceBiz {
     ciudad:       dir.ciudad ?? "",
     archetype:    (dna.archetype as string | undefined) ?? null,
     primaryColor: colors.primary ?? "#8b2e1d",
+    banner_url:   (cfg.banner_url as string | undefined),
   };
 }
 

@@ -8,6 +8,7 @@ export interface MarketplaceBiz {
   ciudad:       string;
   archetype:    string | null;
   primaryColor: string;
+  banner_url?:  string;
 }
 
 const PLAN_BADGE: Record<MarketplaceBiz["plan"], { label: string; cls: string }> = {
@@ -22,7 +23,7 @@ function businessUrl(slug: string, customDomain: string | null): string {
 }
 
 export function BusinessCard({
-  slug, name, plan, customDomain, emoji, lema, ciudad, archetype, primaryColor,
+  slug, name, plan, customDomain, emoji, lema, ciudad, archetype, primaryColor, banner_url,
 }: MarketplaceBiz) {
   const badge = PLAN_BADGE[plan];
   const href  = businessUrl(slug, customDomain);
@@ -30,13 +31,20 @@ export function BusinessCard({
 
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl bg-crema shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/15 transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-tarjeta-hover)]">
-      <div
-        className="flex h-20 items-center justify-center text-4xl"
-        style={{ backgroundColor: `${primaryColor}22` }}
-        aria-hidden
-      >
-        <span style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,.15))" }}>{emoji}</span>
-      </div>
+      {banner_url ? (
+        <div className="h-20 w-full overflow-hidden" aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={banner_url} alt="" className="h-full w-full object-cover" />
+        </div>
+      ) : (
+        <div
+          className="flex h-20 items-center justify-center text-4xl"
+          style={{ backgroundColor: `${primaryColor}22` }}
+          aria-hidden
+        >
+          <span style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,.15))" }}>{emoji}</span>
+        </div>
+      )}
 
       <div className="flex flex-1 flex-col gap-1.5 p-4">
         <div className="flex items-start justify-between gap-2">
