@@ -117,7 +117,7 @@ export default async function BusinessProfilePage({
 
       {/* Banner */}
       {cfg.banner_url && (
-        <div className="-mx-4 -mt-10 mb-8 h-40 overflow-hidden sm:h-52">
+        <div className="-mx-4 -mt-10 mb-8 aspect-video overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={cfg.banner_url}
