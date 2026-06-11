@@ -45,6 +45,7 @@ function toMarketplaceBiz(row: RawBusiness): MarketplaceBiz {
     archetype:    (dna.archetype as string | undefined) ?? null,
     primaryColor: colors.primary ?? "#8b2e1d",
     banner_url:   (cfg.banner_url as string | undefined),
+    logo_url:     (cfg.logo_url   as string | undefined),
   };
 }
 

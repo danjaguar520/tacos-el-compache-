@@ -9,6 +9,7 @@ export interface MarketplaceBiz {
   archetype:    string | null;
   primaryColor: string;
   banner_url?:  string;
+  logo_url?:    string;
 }
 
 const PLAN_BADGE: Record<MarketplaceBiz["plan"], { label: string; cls: string }> = {
@@ -23,7 +24,7 @@ function businessUrl(slug: string, customDomain: string | null): string {
 }
 
 export function BusinessCard({
-  slug, name, plan, customDomain, emoji, lema, ciudad, archetype, primaryColor, banner_url,
+  slug, name, plan, customDomain, emoji, lema, ciudad, archetype, primaryColor, banner_url, logo_url,
 }: MarketplaceBiz) {
   const badge = PLAN_BADGE[plan];
   const href  = businessUrl(slug, customDomain);
@@ -31,7 +32,21 @@ export function BusinessCard({
 
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl bg-crema shadow-[var(--shadow-tarjeta)] ring-1 ring-barro/15 transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-tarjeta-hover)]">
-      {banner_url ? (
+      {logo_url ? (
+        <div
+          className="flex h-20 items-center justify-center"
+          style={{ backgroundColor: `${primaryColor}22` }}
+          aria-hidden
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={logo_url}
+            alt=""
+            className="h-12 w-12 rounded-xl object-contain"
+            style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,.15))" }}
+          />
+        </div>
+      ) : banner_url ? (
         <div className="h-20 w-full overflow-hidden" aria-hidden>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={banner_url} alt="" className="h-full w-full object-cover" />
