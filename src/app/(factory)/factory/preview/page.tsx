@@ -61,21 +61,6 @@ export default function FactoryPreviewPage() {
     );
   }
 
-  async function uploadAsset(dataUrl: string, field: "banner" | "logo"): Promise<string | null> {
-    try {
-      const res = await fetch("/api/factory/upload-asset", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ dataUrl, field }),
-      });
-      if (!res.ok) return null;
-      const json = await res.json() as { url?: string };
-      return json.url ?? null;
-    } catch {
-      return null;
-    }
-  }
-
   async function handleRegenerate() {
     router.push("/factory/crear");
     useFactoryStore.getState().setStep(7);
@@ -113,7 +98,7 @@ export default function FactoryPreviewPage() {
           manual,
           generated,
           theme: { schemaVersion: "1.0", colors: theme.colors, fonts: theme.fonts, logo: theme.logo },
-          bannerB64: bannerUrl ?? undefined,
+          bannerB64: undefined,
           fromAI,
         }),
       });
@@ -135,16 +120,9 @@ export default function FactoryPreviewPage() {
     setPub(true);
     setPublishError(null);
     try {
-      // ── Upload assets to Storage before publish ──────────────────
       const assetUrls: { banner_url?: string; logo_url?: string } = {};
-      if (bannerUrl) {
-        const url = await uploadAsset(bannerUrl, "banner");
-        if (url) assetUrls.banner_url = url;
-      }
-      if (logoUrl) {
-        const url = await uploadAsset(logoUrl, "logo");
-        if (url) assetUrls.logo_url = url;
-      }
+      if (bannerUrl) assetUrls.banner_url = bannerUrl;
+      if (logoUrl)   assetUrls.logo_url   = logoUrl;
 
       const payload: FactoryDraft = {
         schemaVersion: "1.0",

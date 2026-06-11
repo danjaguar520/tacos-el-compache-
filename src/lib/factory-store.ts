@@ -18,9 +18,9 @@ interface FactoryState {
   theme:      Partial<ThemeConfig>;
   /** AI-generated content (set after Claude responds). */
   generated:  GeneratedContent | null;
-  /** Banner image as base64 data URL. */
+  /** Banner — Supabase Storage public URL (uploaded in StepBranding). */
   bannerUrl:  string | null;
-  /** Logo image as base64 data URL. */
+  /** Logo — Supabase Storage public URL (uploaded in StepBranding). */
   logoUrl:    string | null;
   /** Whether Claude was used or templates. */
   fromAI:     boolean;
@@ -116,8 +116,14 @@ export const useFactoryStore = create<FactoryState>()(
     }),
     {
       name:    "lokal-factory-draft",
-      version: 1,
-      // Don't persist bannerUrl and logoUrl to avoid localStorage size limits
+      version: 2,
+      migrate: (state: unknown, version: number) => {
+        if (version < 2) {
+          // v1 never persisted bannerUrl/logoUrl (base64). Reset to null.
+          return { ...(state as object), bannerUrl: null, logoUrl: null };
+        }
+        return state;
+      },
       partialize: (s) => ({
         stepIndex:  s.stepIndex,
         draft:      s.draft,
@@ -125,7 +131,8 @@ export const useFactoryStore = create<FactoryState>()(
         generated:  s.generated,
         fromAI:     s.fromAI,
         lastSaved:  s.lastSaved,
-        // bannerUrl and logoUrl are session-only
+        bannerUrl:  s.bannerUrl,
+        logoUrl:    s.logoUrl,
       }),
     },
   ),
